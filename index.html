@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopNapThe.VN - Demo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #0b0813;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        /* Khung bao ngoài bám sát giao diện app di động */
+        .shop-box {
+            width: 100%;
+            max-width: 480px;
+            background: #131021;
+            border-radius: 24px;
+            padding: 25px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 40px rgba(121, 40, 202, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        /* Tiêu đề rực rỡ màu sắc */
+        .shop-title {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff007f, #ffbe0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .shop-subtitle {
+            font-size: 14px;
+            color: #a29bfe;
+            margin-bottom: 25px;
+        }
+
+        /* Khung nhập thông tin ID */
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            background: #1c1831;
+            border: 2px solid #2d264d;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .input-field:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+            background: #221d3b;
+        }
+
+        /* BỐ CỤC LƯỚI 2 CỘT GIỐNG TRONG ẢNH */
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            margin-bottom: 25px;
+        }
+
+        /* Từng ô gói nạp màu mè, bo góc mượt */
+        .package-card {
+            background: #1c1831;
+            border: 2px solid #2d264d;
+            border-radius: 16px;
+            padding: 20px 10px; /* Tăng nhẹ chiều cao ô để chứa ảnh to */
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Hiệu ứng Đèn LED đổi màu khi rê chuột vào */
+        .package-card:hover {
+            transform: translateY(-3px);
+            border-color: #ff007f;
+            box-shadow: 0 5px 15px rgba(255, 0, 127, 0.3);
+        }
+
+        /* Hiệu ứng khi gói ĐƯỢC BẤM CHỌN (Active) */
+        .package-card.selected {
+            background: linear-gradient(135deg, #251b4f, #150f2e);
+            border-color: #00f0ff;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+        }
+
+        .pkg-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        /* Khung hiển thị Kim Cương phát sáng */
+        .pkg-diamond {
+            display: flex;
+            flex-direction: column; /* Đổi thành cột dọc để chữ và ảnh xếp thẳng hàng đẹp hơn */
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #00f0ff;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+        }
+
+        /* CHỈNH KHUNG ẢNH TO RA Ở ĐÂY */
+        .pkg-diamond img {
+            width: 40px;         /* Tăng kích thước từ 18px lên 40px */
+            height: 40px;        /* Tăng kích thước từ 18px lên 40px */
+            object-fit: contain; /* Đảm bảo ảnh tự co giãn vừa vặn, không bị méo */
+        }
+
+        /* NÚT XÁC NHẬN TO ĐẸP DƯỚI CÙNG */
+        .btn-submit {
+            width: 80%;
+            margin: 10px auto 0;
+            padding: 14px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(90deg, #ff0055, #9000ff);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 0, 85, 0.4);
+            transition: all 0.3s ease;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.03);
+            box-shadow: 0 5px 25px rgba(144, 0, 255, 0.6);
+            background: linear-gradient(90deg, #ff007f, #7928ca);
+        }
+
+        /* LỚP PHỦ POPUP (OVERLAY) */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 3, 10, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: #17132a;
+            border: 2px solid #ff007f;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 380px;
+            width: 85%;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.4);
+            display: none;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .overlay.active .modal {
+            transform: scale(1);
+        }
+
+        /* Vòng xoay chuyển màu RGB */
+        .loader {
+            width: 55px;
+            height: 55px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid #00f0ff;
+            border-right: 4px solid #ff007f;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .modal p {
+            color: #b2aec6;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        .btn-ok {
+            background: linear-gradient(135deg, #00f0ff, #0077ff);
+            color: white;
+            border: none;
+            padding: 12px 45px;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+            transition: background 0.2s;
+        }
+
+        .btn-ok:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="shop-box">
+        <div class="shop-title">ShopNapThe.VN</div>
+        <div class="shop-subtitle">Chúc admin ngày mới tốt lành ☀️</div>
+
+        <input type="number" id="player-id" class="input-field" placeholder="Nhập mã người chơi (ID)...">
+
+        <div class="package-grid">
+            <div class="package-card" onclick="selectPackage(this, 'Gói 25 💎', 'Gói Kim Cuơng')">
+                <div class="pkg-title">Gói 25 💎</div>
+                <div class="pkg-diamond">
+                    <img src="https://i.postimg.cc/sDfb10nY/Screenshot-2026-05-28-23-54-26-67.jpg" alt="diamond">
+                    <span>Gói Kim Cuơng</span>
+                </div>
+            </div>
+            <div class="package-card" onclick="selectPackage(this, 'Gói 56 💎', 'Gói Kim Cuơng')">
+                <div class="pkg-title">Gói 56 💎</div>
+                <div class="pkg-diamond">
+                    <img src="https://i.postimg.cc/sDfb10nY/Screenshot-2026-05-28-23-54-26-67.jpg" alt="diamond">
+                    <span>Gói Kim Cuơng</span>
+                </div>
+            </div>
+
+            <div class="package-card" onclick="selectPackage(this, 'Gói 113 💎', 'Gói Kim Cuơng')">
+                <div class="pkg-title">Gói 113 💎</div>
+                <div class="pkg-diamond">
+                    <img src="https://i.postimg.cc/sDfb10nY/Screenshot-2026-05-28-23-54-26-67.jpg" alt="diamond">
+                    <span>Gói Kim Cuơng</span>
+                </div>
+            </div>
+            <div class="package-card" onclick="selectPackage(this, 'Gói 283 💎', 'Gói Kim Cuơng')">
+                <div class="pkg-title">Gói 283 💎</div>
+                <div class="pkg-diamond">
+                    <img src="https://i.postimg.cc/sDfb10nY/Screenshot-2026-05-28-23-54-26-67.jpg" alt="diamond">
+                    <span>Gói Kim Cuơng</span>
+                </div>
+            </div>
+
+            <div class="package-card" onclick="selectPackage(this, 'Gói 283 💎', '150x')">
+                <div class="pkg-title">Gói 566 💎</div>
+                <div class="pkg-diamond">
+                    <img src="https://i.postimg.cc/sDfb10nY/Screenshot-2026-05-28-23-54-26-67.jpg" alt="diamond">
+                    <span>Gói Kim Cuơng</span>
+                </div>
+            </div>
+            <div class="package-card" onclick="selectPackage(this, 'Gói 1.132 💎', 'Gói Kim Cuơng')">
+                <div class="pkg-title">Gói 1.132 💎</div>
+                <div class="pkg-diamond">
+                    <img src="https://i.postimg.cc/sDfb10nY/Screenshot-2026-05-28-23-54-26-67.jpg" alt="diamond">
+                    <span>Gói Kim Cuơng</span>
+                </div>
+            </div>
+
+            <div class="package-card" onclick="selectPackage(this, 'Gói 2.830 💎', 'Gói Kim Cuơng')">
+                <div class="pkg-title">Gói 2.830 💎</div>
+                <div class="pkg-diamond">
+                    <img src="https://i.postimg.cc/sDfb10nY/Screenshot-2026-05-28-23-54-26-67.jpg" alt="diamond">
+                    <span>Gói Kim Cuơng</span>
+                </div>
+            </div>
+            <div class="package-card" onclick="selectPackage(this, 'Gói 5.750 💎', 'Gói Kim Cuơng')">
+                <div class="pkg-title">Gói 5.750 💎</div>
+                <div class="pkg-diamond">
+                    <img src="https://i.postimg.cc/sDfb10nY/Screenshot-2026-05-28-23-54-26-67.jpg" alt="diamond">
+                    <span>Gói Kim Cuơng</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="processPayment()">Xác nhận nạp ngay </button>
+    </div>
+
+    <div class="overlay" id="popupOverlay">
+        
+        <div class="modal" id="loadingView" style="display: block; border-color: #ff007f; box-shadow: 0 0 25px rgba(255, 0, 127, 0.4);">
+            <div class="loader"></div>
+            <h3 style="color: #ff007f;">Đang xử lý kết nối...</h3>
+            <p>Hệ thống đang kiểm tra ID mã người chơi và nạp gói dữ liệu. Vui lòng giữ nguyên màn hình.</p>
+        </div>
+
+        <div class="modal" id="successView">
+            <h3 style="color: #00f0ff; text-shadow: 0 0 10px rgba(0,240,255,0.3);">Nạp Thành Công!</h3>
+            <p id="successInfo">...</p>
+            <button class="btn-ok" onclick="closePopup()">OK</button>
+        </div>
+
+    </div>
+
+    <script>
+        let chosenPackageName = "";
+        let chosenPackageValue = "";
+
+        function selectPackage(element, name, value) {
+            const allCards = document.querySelectorAll('.package-card');
+            allCards.forEach(card => card.classList.remove('selected'));
+
+            element.classList.add('selected');
+            chosenPackageName = name;
+            chosenPackageValue = value;
+        }
+
+        function processPayment() {
+            const playerId = document.getElementById('player-id').value.trim();
+
+            if (playerId === "") {
+                alert("Vui lòng nhập Mã người chơi (ID)!");
+                return;
+            }
+
+            if (chosenPackageName === "") {
+                alert("Vui lòng bấm chọn 1 gói vật phẩm ở danh sách phía trên!");
+                return;
+            }
+
+            const overlay = document.getElementById('popupOverlay');
+            const loadingView = document.getElementById('loadingView');
+            const successView = document.getElementById('successView');
+            const successnfo = document.getElementById('successInfo');
+
+            overlay.classList.add('active');
+            loadingView.style.display = 'block';
+            successView.style.display = 'none';
+
+            setTimeout(() => {
+                loadingView.style.display = 'none';
+                successInfo.innerHTML = `Hệ thống đã nạp thành công số kim cuơng <strong style="color: #00f0ff;">${chosenPackageName}</strong> (${chosenPackageValue}) vào tài khoản ID: <span style="color: #ffbe0b; font-weight:bold;">${playerId}</span>.<br><br>VUI LÒNG ĐỢI 15-30 PHÚT ĐỂ HỆ THỐNG XỬ LÝ KIM CUƠNG SẼ ĐUỢC GỬI VỀ HÒM THƯ CẢM ƠN ĐÃ SỬ DỤNG DỊCH VỤ  !`;
+                successView.style.display = 'block';
+            }, 4000);
+        }
+
+        function closePopup() {
+            document.getElementById('popupOverlay').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
